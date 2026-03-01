@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chaos OS</title>
+<style>
+body { margin:0; font-family:Arial, sans-serif; background:#111; color:#fff; }
+.hidden { display:none; }
+#loginScreen { height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.user { background:#222; padding:15px 25px; margin:10px; border-radius:8px; cursor:pointer; }
+#desktop { height:100vh; background:linear-gradient(135deg,#1a1a1a,#000); }
+#taskbar { background:#000; padding:10px; display:flex; gap:10px; }
+button { background:#333; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+.window { background:#222; padding:15px; border-radius:10px; margin:20px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <h1>Chaos OS</h1>
+  <p>Select User</p>
+  <div class="user" onclick="login('Admin')">Admin</div>
+  <div class="user" onclick="login('Guest')">Guest</div>
+  <div class="user" onclick="login('ChaosDev')">ChaosDev</div>
+</div>
+
+<!-- DESKTOP -->
+<div id="desktop" class="hidden">
+  <div id="taskbar">
+    <span id="userLabel"></span>
+    <button onclick="openApp('store')">Chaos Store</button>
+    <button onclick="openApp('about')">About</button>
+  </div>
+
+  <div id="store" class="window hidden">
+    <h2>Chaos Store</h2>
+    <p>Install Fake Apps</p>
+    <button onclick="installApp('WeatherX')">Install WeatherX</button>
+    <button onclick="installApp('ChaosChat')">Install ChaosChat</button>
+    <div id="installedApps"></div>
+  </div>
+
+  <div id="about" class="window hidden">
+    <h2>About Chaos OS</h2>
+    <p>Version 1.1</p>
+    <p>A fake operating system built for chaos.</p>
+  </div>
+</div>
+
+<script>
+let apps = JSON.parse(localStorage.getItem('apps') || '[]');
+
+function login(user) {
+  localStorage.setItem('chaosUser', user);
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('desktop').classList.remove('hidden');
+  document.getElementById('userLabel').innerText = 'User: ' + user;
+  renderApps();
+}
+
+function openApp(id) {
+  document.querySelectorAll('.window').forEach(w => w.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function installApp(name) {
+  if (!apps.includes(name)) apps.push(name);
+  localStorage.setItem('apps', JSON.stringify(apps));
+  renderApps();
+}
+
+function renderApps() {
+  const div = document.getElementById('installedApps');
+  div.innerHTML = '<h3>Installed:</h3>' + (apps.length ? apps.join(', ') : 'None');
+}
+
+const savedUser = localStorage.getItem('chaosUser');
+if (savedUser) login(savedUser);
+</script>
+
+</body>
+</html>
